@@ -33,7 +33,7 @@ const createNoopSupabaseClient = () => ({
       return {
         data: null,
         error: {
-          message: 'Configura VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY para usar Google.',
+          message: 'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to use Google sign-in.',
         },
       }
     },
@@ -47,7 +47,7 @@ const createNoopSupabaseClient = () => ({
 })
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Faltan VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en el entorno.')
+  console.warn('VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing from the environment.')
 }
 
 export const supabase =
