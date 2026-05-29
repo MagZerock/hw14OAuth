@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import LogoutModal from './components/LogoutModal.vue'
 import Login from './views/Login.vue'
 import Home from './views/Home.vue'
 import { supabase } from './lib/supabase'
@@ -9,6 +10,7 @@ const homeSection = ref('home')
 const user = ref(null)
 const isProfileDropdownOpen = ref(false)
 const showSignOutModal = ref(false)
+const showSessionClosedModal = ref(false)
 let authSubscription = null
 
 const isHomeView = computed(() => activeView.value === 'home' && !!user.value)
@@ -37,6 +39,7 @@ const syncSession = async () => {
 	if (!data.session?.user) {
 		isProfileDropdownOpen.value = false
 		showSignOutModal.value = false
+		showSessionClosedModal.value = false
 	}
 }
 
@@ -70,20 +73,31 @@ const signOut = async () => {
 	} catch (error) {
 		console.error(error)
 	}
+}
+
+const handleSessionClosed = () => {
+	showSessionClosedModal.value = false
 	user.value = null
 	homeSection.value = 'home'
 	activeView.value = 'login'
+	isProfileDropdownOpen.value = false
 }
 
 onMounted(async () => {
 	await syncSession()
-	const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+	const { data } = supabase.auth.onAuthStateChange((event, session) => {
 		user.value = session?.user ?? null
-		activeView.value = session?.user ? 'home' : 'login'
-		if (!session?.user) {
+		if (session?.user) {
+			activeView.value = 'home'
+			showSessionClosedModal.value = false
+		} else if (event === 'SIGNED_OUT') {
+			showSessionClosedModal.value = true
+			activeView.value = 'login'
 			isProfileDropdownOpen.value = false
 			showSignOutModal.value = false
 			homeSection.value = 'home'
+		} else {
+			activeView.value = 'login'
 		}
 	})
 	authSubscription = data.subscription
@@ -149,6 +163,8 @@ onBeforeUnmount(() => {
 			<p class="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">© 2026 BICONOIR'S RESTAURANT</p>
 			<p class="mt-2 text-sm text-white/55">Excellence in every culinary detail.</p>
 		</footer>
+
+		<LogoutModal :show="showSessionClosedModal" :seconds="5" @close="handleSessionClosed" />
 
 		<div
 			v-if="showSignOutModal"
