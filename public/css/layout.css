@@ -1,0 +1,27 @@
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f9fafb;
+    margin: 0;
+}
+
+.modal-personalize {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-personalize.active {
+    display: flex;
+}
+
+.logo-main {
+    height: 48px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
