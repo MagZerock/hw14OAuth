@@ -2,7 +2,11 @@ import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
 
 export default {
-	setup() {
+	props: {
+		authMessage: { type: String, default: '' },
+	},
+	emits: ['authenticated', 'login-error'],
+	setup(_, { emit }) {
 		const email = ref('')
 		const password = ref('')
 		const isLoading = ref(false)
@@ -41,14 +45,42 @@ export default {
 				return
 			}
 
-			const { error } = await supabase.auth.signInWithPassword({
-				email: normalizedEmail,
-				password: trimmedPassword,
-			})
+			const { data, error } = await supabase
+				.from('users')
+				.select('user_id, name, email, phone, password_hash, role')
+				.eq('email', normalizedEmail)
+				.maybeSingle()
 
 			if (error) {
 				errorMessage.value = getFriendlyErrorMessage(error)
+				isLoading.value = false
+				return
 			}
+
+			if (!data) {
+				errorMessage.value = 'This email is not registered in users.'
+				isLoading.value = false
+				return
+			}
+
+			if (String(data.password_hash ?? '') !== trimmedPassword) {
+				errorMessage.value = 'Invalid login credentials.'
+				isLoading.value = false
+				return
+			}
+
+			emit('authenticated', {
+				id: data.user_id,
+				name: data.name,
+				email: data.email,
+				phone: data.phone,
+				role: data.role,
+				user_metadata: {
+					full_name: data.name,
+					name: data.name,
+					role: data.role,
+				},
+			})
 
 			isLoading.value = false
 		}

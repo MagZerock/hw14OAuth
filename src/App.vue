@@ -47,7 +47,13 @@
 		</header>
 
 		<main class="flex w-full flex-1 flex-col overflow-hidden">
-			<Login v-if="activeView === 'login'" class="flex-1" />
+			<Login
+				v-if="activeView === 'login'"
+				class="flex-1"
+				:auth-message="loginMessage"
+				@authenticated="handleLocalAuthenticated"
+				@login-error="handleLoginError"
+			/>
 			<Home v-else-if="activeView === 'home'" class="flex-1" :user="user" :section="homeSection" @section-change="goHomeSection" />
 		</main>
 

@@ -61,6 +61,10 @@
         <span>{{ isLoading ? 'Redirecting...' : 'Continue with Google' }}</span>
       </button>
 
+      <p v-if="authMessage" class="mt-4 text-sm text-red-600">
+        {{ authMessage }}
+      </p>
+
       <p v-if="errorMessage" class="mt-4 text-sm text-red-600">
         {{ errorMessage }}
       </p>
