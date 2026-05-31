@@ -4,15 +4,15 @@
 	<div class="flex h-screen max-h-screen w-full flex-col overflow-hidden bg-[#f9fafb] text-slate-800">
 		<header v-if="isHomeView" class="sticky top-0 z-40 w-full bg-[#1a4731] text-white shadow-2xl">
 			<div class="flex w-full items-center justify-between gap-4 px-6 py-4 lg:px-8">
-				<a href="#" class="flex items-center gap-4" @click.prevent="goHomeSection('home')">
+				<a href="#" class="flex items-center gap-4" @click.prevent="activeView='home'">
 					<img src="/img/restaurant-logo-green.png" alt="Biconoirs Gourmet" class="logo-main" />
 				</a>
 
 				<div class="flex items-center gap-3">
 					<nav class="hidden flex-wrap items-center gap-2 text-sm font-semibold md:flex lg:gap-3">
-						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="goHomeSection('home')">Home</button>
-						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="goHomeSection('menu')">Menu</button>
-						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="goHomeSection('about')">About</button>
+						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="activeView='home'">Home</button>
+						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="activeView='home'">Menu</button>
+						<button class="rounded-full px-4 py-2 transition hover:bg-white/10" @click="activeView='home'">About</button>
 					</nav>
 
 					<div class="relative">
@@ -52,9 +52,8 @@
 				class="flex-1"
 				:auth-message="loginMessage"
 				@authenticated="handleLocalAuthenticated"
-				@login-error="handleLoginError"
 			/>
-			<Home v-else-if="activeView === 'home'" class="flex-1" :user="user" :section="homeSection" @section-change="goHomeSection" />
+			<Home v-else-if="activeView === 'home'" class="flex-1" :user="user" />
 		</main>
 
 		<footer class="w-full bg-[#0b111e] px-4 py-8 text-center text-white/75">

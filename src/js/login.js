@@ -5,7 +5,7 @@ export default {
 	props: {
 		authMessage: { type: String, default: '' },
 	},
-	emits: ['authenticated', 'login-error'],
+	emits: ['authenticated'],
 	setup(_, { emit }) {
 		const email = ref('')
 		const password = ref('')

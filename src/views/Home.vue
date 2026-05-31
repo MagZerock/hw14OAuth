@@ -1,5 +1,3 @@
-<script src="../js/home.js"></script>
-
 <template>
   <section
     class="relative flex w-full flex-1 flex-col items-center justify-center overflow-hidden bg-cover bg-center"

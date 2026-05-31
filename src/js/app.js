@@ -12,7 +12,6 @@ export default {
 	},
 	setup() {
 		const activeView = ref('login')
-		const homeSection = ref('home')
 		const user = ref(null)
 		const authSource = ref('none')
 		const loginMessage = ref('')
@@ -84,11 +83,7 @@ export default {
 			activeView.value = 'home'
 		}
 
-		const goHomeSection = (section) => {
-			homeSection.value = section
-			activeView.value = 'home'
-			isProfileDropdownOpen.value = false
-		}
+
 
 		const toggleProfileDropdown = () => {
 			isProfileDropdownOpen.value = !isProfileDropdownOpen.value
@@ -126,7 +121,6 @@ export default {
 			showSessionClosedModal.value = false
 			user.value = null
 			authSource.value = 'none'
-			homeSection.value = 'home'
 			activeView.value = 'login'
 			isProfileDropdownOpen.value = false
 		}
@@ -136,10 +130,6 @@ export default {
 			authSource.value = 'local'
 			loginMessage.value = ''
 			activeView.value = 'home'
-		}
-
-		const handleLoginError = (message) => {
-			loginMessage.value = message
 		}
 
 		onMounted(async () => {
@@ -157,7 +147,6 @@ export default {
 					activeView.value = 'login'
 					isProfileDropdownOpen.value = false
 					showSignOutModal.value = false
-					homeSection.value = 'home'
 					authSource.value = 'none'
 				} else {
 					activeView.value = 'login'
@@ -172,7 +161,6 @@ export default {
 
 		return {
 			activeView,
-			homeSection,
 			user,
 			loginMessage,
 			isProfileDropdownOpen,
@@ -181,14 +169,13 @@ export default {
 			isHomeView,
 			profileName,
 			profileRole,
-			goHomeSection,
+
 			toggleProfileDropdown,
 			requestSignOut,
 			cancelSignOutModal,
 			signOut,
 			handleSessionClosed,
 			handleLocalAuthenticated,
-			handleLoginError,
 		}
 	},
 }
