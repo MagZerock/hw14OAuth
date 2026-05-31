@@ -1,27 +1,4 @@
-<script setup>
-import { onBeforeUnmount, onMounted } from 'vue'
-import { supabase } from '../lib/supabase'
-
-const emit = defineEmits(['done'])
-
-let timeoutId = null
-
-onMounted(async () => {
-  try {
-    await supabase.auth.signOut()
-  } finally {
-    timeoutId = window.setTimeout(() => {
-      emit('done')
-    }, 5000)
-  }
-})
-
-onBeforeUnmount(() => {
-  if (timeoutId) {
-    window.clearTimeout(timeoutId)
-  }
-})
-</script>
+<script src="../js/logout.js"></script>
 
 <template>
   <section class="flex w-full max-w-md flex-col items-center rounded-2xl bg-white p-8 text-center shadow-xl ring-1 ring-black/5">

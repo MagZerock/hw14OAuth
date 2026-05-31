@@ -1,51 +1,8 @@
-<script setup>
-import { ref } from 'vue'
-import { supabase } from '../lib/supabase'
-
-const isLoading = ref(false)
-const errorMessage = ref('')
-
-const getFriendlyErrorMessage = (error) => {
-  const rawMessage = error?.message ?? 'Unable to sign in with Google.'
-
-  if (typeof rawMessage !== 'string') {
-    return 'Unable to sign in with Google.'
-  }
-
-  try {
-    const parsed = JSON.parse(rawMessage)
-
-    if (typeof parsed === 'object' && parsed) {
-      return parsed.msg ?? parsed.error ?? rawMessage
-    }
-  } catch {
-    // The message is not JSON; use it as-is.
-  }
-
-  return rawMessage
-}
-
-const loginWithGoogle = async () => {
-  isLoading.value = true
-  errorMessage.value = ''
-
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.origin,
-    },
-  })
-
-  if (error) {
-    errorMessage.value = getFriendlyErrorMessage(error)
-    isLoading.value = false
-  }
-}
-</script>
+<script src="../js/login.js"></script>
 
 <template>
   <section class="flex min-h-full w-full flex-1 items-center justify-center px-4 py-10 bg-[radial-gradient(circle_at_top,_rgba(34,78,58,0.42),_transparent_42%),linear-gradient(180deg,#08111b_0%,#0e1a24_48%,#0b111e_100%)]">
-    <div class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white/95 p-8 shadow-xl ring-1 ring-white/20 backdrop-blur-sm">
+    <div class="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/95 p-8 shadow-xl ring-1 ring-white/20 backdrop-blur-sm">
       <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-lime-400 to-emerald-600"></div>
 
       <div class="space-y-3 text-center">
@@ -54,12 +11,63 @@ const loginWithGoogle = async () => {
         </p>
         <h1 class="text-3xl font-bold text-[#1a4731]">Biconoirs Gourmet</h1>
         <p class="text-sm leading-6 text-slate-600">
-          Sign in with Google to access the academic panel and review your profile.
+          Register with Google or use your email and password to enter the panel.
         </p>
       </div>
 
+      <div class="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1 text-sm font-semibold">
+        <button
+          type="button"
+          class="rounded-xl px-4 py-2 transition"
+          :class="authMode === 'login' ? 'bg-white text-[#1a4731] shadow-sm' : 'text-slate-500'"
+          @click="authMode = 'login'"
+        >
+          Sign in
+        </button>
+        <button
+          type="button"
+          class="rounded-xl px-4 py-2 transition"
+          :class="authMode === 'register' ? 'bg-white text-[#1a4731] shadow-sm' : 'text-slate-500'"
+          @click="authMode = 'register'"
+        >
+          Register
+        </button>
+      </div>
+
+      <form class="mt-6 space-y-4" @submit.prevent="handleEmailAuth">
+        <label class="block">
+          <span class="mb-2 block text-sm font-semibold text-slate-700">Email</span>
+          <input
+            v-model="email"
+            type="email"
+            autocomplete="email"
+            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="block">
+          <span class="mb-2 block text-sm font-semibold text-slate-700">Password</span>
+          <input
+            v-model="password"
+            type="password"
+            autocomplete="current-password"
+            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+            placeholder="Enter your password"
+          />
+        </label>
+
+        <button
+          type="submit"
+          class="flex w-full items-center justify-center rounded-xl bg-[#1a4731] px-5 py-4 font-semibold text-white shadow-lg shadow-emerald-950/20 transition hover:bg-[#245c40] disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="isLoading"
+        >
+          {{ isLoading ? 'Processing...' : authMode === 'register' ? 'Create account' : 'Sign in' }}
+        </button>
+      </form>
+
       <button
-        class="mt-8 flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+        class="mt-5 flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
         :disabled="isLoading"
         @click="loginWithGoogle"
       >
@@ -74,6 +82,10 @@ const loginWithGoogle = async () => {
 
       <p v-if="errorMessage" class="mt-4 text-sm text-red-600">
         {{ errorMessage }}
+      </p>
+
+      <p v-if="successMessage" class="mt-4 text-sm text-emerald-700">
+        {{ successMessage }}
       </p>
     </div>
   </section>
