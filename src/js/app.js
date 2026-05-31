@@ -59,24 +59,26 @@ export default {
 				.eq('email', sessionUser.email)
 				.maybeSingle()
 
-			if (lookupError || !existingUser) {
-				console.warn('Google account is not registered in users table.')
-				await supabase.auth.signOut()
-				user.value = null
-				authSource.value = 'none'
-				loginMessage.value = 'This Google account is not registered in users.'
-				activeView.value = 'login'
-				return
-			}
-
-			user.value = {
-				id: existingUser.user_id,
-				email: existingUser.email,
-				user_metadata: {
-					full_name: existingUser.name,
-					name: existingUser.name,
-					role: existingUser.role,
-				},
+			if (existingUser) {
+				user.value = {
+					id: existingUser.user_id,
+					email: existingUser.email,
+					user_metadata: {
+						full_name: existingUser.name,
+						name: existingUser.name,
+						role: existingUser.role,
+					},
+				}
+			} else {
+				user.value = {
+					id: sessionUser.id ?? null,
+					email: sessionUser.email,
+					user_metadata: {
+						full_name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || '',
+						name: sessionUser.user_metadata?.name || sessionUser.user_metadata?.full_name || '',
+						role: 'CUSTOMER',
+					},
+				}
 			}
 			authSource.value = 'google'
 			loginMessage.value = ''
