@@ -94,6 +94,33 @@ export default {
 			const { data } = supabase.auth.onAuthStateChange((event, session) => {
 				user.value = session?.user ?? null
 				if (session?.user) {
+					// Ensure a users row exists for OAuth users
+					;(async (u) => {
+						if (!u?.id) return
+						try {
+							const { data: existing, error: lookupErr } = await supabase
+								.from('users')
+								.select('user_id')
+								.eq('user_id', u.id)
+								.maybeSingle()
+							if (lookupErr) {
+								console.warn('users lookup failed:', lookupErr)
+								return
+							}
+							if (!existing) {
+								const name = u.user_metadata?.full_name || u.user_metadata?.name || (u.email ? u.email.split('@')[0] : null)
+								const { error: insertErr } = await supabase.from('users').insert({
+									user_id: u.id,
+									name,
+									email: u.email,
+									role: 'CUSTOMER',
+								})
+								if (insertErr) console.warn('failed creating users row:', insertErr)
+							}
+						} catch (err) {
+							console.error('error ensuring users row:', err)
+						}
+					})(session.user)
 					activeView.value = 'home'
 					showSessionClosedModal.value = false
 				} else if (event === 'SIGNED_OUT') {

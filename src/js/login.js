@@ -3,12 +3,10 @@ import { supabase } from '../lib/supabase'
 
 export default {
 	setup() {
-		const authMode = ref('login')
 		const email = ref('')
 		const password = ref('')
 		const isLoading = ref(false)
 		const errorMessage = ref('')
-		const successMessage = ref('')
 
 		const getFriendlyErrorMessage = (error) => {
 			const rawMessage = error?.message ?? 'Unable to complete authentication.'
@@ -30,10 +28,9 @@ export default {
 			return rawMessage
 		}
 
-		const handleEmailAuth = async () => {
+		const handleEmailSignIn = async () => {
 			isLoading.value = true
 			errorMessage.value = ''
-			successMessage.value = ''
 
 			const normalizedEmail = email.value.trim()
 			const trimmedPassword = password.value.trim()
@@ -44,27 +41,13 @@ export default {
 				return
 			}
 
-			const authRequest =
-				authMode.value === 'register'
-					? supabase.auth.signUp({
-						email: normalizedEmail,
-						password: trimmedPassword,
-						options: {
-							emailRedirectTo: window.location.origin,
-						},
-					})
-					: supabase.auth.signInWithPassword({
-						email: normalizedEmail,
-						password: trimmedPassword,
-					})
-
-			const { data, error } = await authRequest
+			const { error } = await supabase.auth.signInWithPassword({
+				email: normalizedEmail,
+				password: trimmedPassword,
+			})
 
 			if (error) {
 				errorMessage.value = getFriendlyErrorMessage(error)
-			} else if (authMode.value === 'register' && !data.session) {
-				successMessage.value = 'Check your email to confirm the account before signing in.'
-				password.value = ''
 			}
 
 			isLoading.value = false
@@ -73,7 +56,6 @@ export default {
 		const loginWithGoogle = async () => {
 			isLoading.value = true
 			errorMessage.value = ''
-			successMessage.value = ''
 
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
@@ -89,13 +71,11 @@ export default {
 		}
 
 		return {
-			authMode,
 			email,
 			password,
 			isLoading,
 			errorMessage,
-			successMessage,
-			handleEmailAuth,
+			handleEmailSignIn,
 			loginWithGoogle,
 		}
 	},

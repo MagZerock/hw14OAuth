@@ -15,26 +15,7 @@
         </p>
       </div>
 
-      <div class="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1 text-sm font-semibold">
-        <button
-          type="button"
-          class="rounded-xl px-4 py-2 transition"
-          :class="authMode === 'login' ? 'bg-white text-[#1a4731] shadow-sm' : 'text-slate-500'"
-          @click="authMode = 'login'"
-        >
-          Sign in
-        </button>
-        <button
-          type="button"
-          class="rounded-xl px-4 py-2 transition"
-          :class="authMode === 'register' ? 'bg-white text-[#1a4731] shadow-sm' : 'text-slate-500'"
-          @click="authMode = 'register'"
-        >
-          Register
-        </button>
-      </div>
-
-      <form class="mt-6 space-y-4" @submit.prevent="handleEmailAuth">
+      <form class="mt-6 space-y-4" @submit.prevent="handleEmailSignIn">
         <label class="block">
           <span class="mb-2 block text-sm font-semibold text-slate-700">Email</span>
           <input
@@ -62,7 +43,7 @@
           class="flex w-full items-center justify-center rounded-xl bg-[#1a4731] px-5 py-4 font-semibold text-white shadow-lg shadow-emerald-950/20 transition hover:bg-[#245c40] disabled:cursor-not-allowed disabled:opacity-70"
           :disabled="isLoading"
         >
-          {{ isLoading ? 'Processing...' : authMode === 'register' ? 'Create account' : 'Sign in' }}
+          {{ isLoading ? 'Processing...' : 'Sign in' }}
         </button>
       </form>
 
